@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const serviceCollection = client.db("servicesDB").collection("services");
-    const addserviceCollection = client.db("servicesDB").collection("booked");
+    const bookedCollection = client.db("servicesDB").collection("booked");
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
@@ -38,8 +38,30 @@ async function run() {
       const newProducts = req.body;
       console.log(newProducts);
 
-      const result = await addserviceCollection.insertOne(newProducts);
+      const result = await bookedCollection.insertOne(newProducts);
       res.send(result);
+    });
+
+    app.get("/booked", async (req, res) => {
+      console.log(req.query.email);
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await bookedCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.delete("/booked/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      // console.log("query" + query);
+      // const result = await productCollection.findOne(query);
+      const result = await bookedCollection.deleteOne(query);
+      console.log(result);
+      res.send(result);
+      // product details
     });
 
     app.get("/services/:id", async (req, res) => {
