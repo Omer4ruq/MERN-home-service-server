@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,6 +24,8 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const serviceCollection = client.db("servicesDB").collection("services");
+    const addserviceCollection = client.db("servicesDB").collection("booked");
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
@@ -31,6 +33,26 @@ async function run() {
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
+
+    app.post("/booked", async (req, res) => {
+      const newProducts = req.body;
+      console.log(newProducts);
+
+      const result = await addserviceCollection.insertOne(newProducts);
+      res.send(result);
+    });
+
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      // console.log("query" + query);
+      // const result = await productCollection.findOne(query);
+      const result = await serviceCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+      // product details
+    });
 
     app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
