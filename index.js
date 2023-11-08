@@ -95,6 +95,35 @@ async function run() {
       // product details
     });
 
+    app.put("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upset: true };
+      const updatedProduct = req.body;
+      const product = {
+        $set: {
+          serviceType: updatedProduct.serviceType,
+          photoURL: updatedProduct.photoURL,
+          name: updatedProduct.name,
+          price: updatedProduct.price,
+          email: updatedProduct.email,
+          description: updatedProduct.description,
+          serviceImageURL: updatedProduct.serviceImageURL,
+          serviceArea: updatedProduct.serviceArea,
+          serviceProviderAbout: updatedProduct.serviceProviderAbout,
+        },
+      };
+
+      const result = await serviceCollection.updateOne(
+        filter,
+        product,
+        options
+      );
+      console.log(result);
+      res.send(result);
+    });
+
     app.get("/services", async (req, res) => {
       console.log(req.query.email);
       let query = {};
