@@ -35,21 +35,20 @@ const logger = (req, res, next) => {
   next();
 };
 
-const verifyToken = (req, res next) =>{
-  const token = req?.cookies?.token
+const verifyToken = (req, res) => {
+  const token = req?.cookies?.token;
   // console.log('token in the middleware', token)
-  if(!token){
-    return res.status(401).send({message: 'unauthorized access'})
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized access" });
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
-    if(err){
-      return res.status(401).send({message: 'unauthorized access'})
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "unauthorized access" });
     }
-    req.user = decoded
-    next()
-  })
-  // next()
-}
+    req.user = decoded;
+    next();
+  });
+};
 
 async function run() {
   try {
@@ -72,9 +71,11 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/booked", logger, verifyToken, async (req, res) => {
+    app.get("/booked", async (req, res) => {
       console.log(req.query.email);
-      
+      // if (req.user.email !== req.query.email) {
+      //   return res.status(403).send({ message: "forbidden access" });
+      // }
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email };
