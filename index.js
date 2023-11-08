@@ -1,12 +1,18 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleweare
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 console.log(process.env.DB_PASS);
@@ -33,7 +39,7 @@ async function run() {
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
-
+    // booked realeted API
     app.post("/booked", async (req, res) => {
       const newProducts = req.body;
       console.log(newProducts);
@@ -64,6 +70,29 @@ async function run() {
       // product details
     });
 
+    // auth realetd API
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      console.log("user for token", user);
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN - SECRET, {
+        expiresIn: "1h",
+      });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+        })
+        .send({ success: true });
+    });
+
+    app.post("/logout", async (req, res) => {
+      const user = req.body;
+      console.log("logged out user", user);
+      res.clearCookie("token", { maxAge: 0 }).send({ success: true });
+    });
+
+    // service realeted API
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
