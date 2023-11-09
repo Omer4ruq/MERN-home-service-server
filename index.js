@@ -237,6 +237,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/catagory", async (req, res) => {
+      console.log(req.query.serviceType);
+      let query = {};
+      if (req.query?.serviceType) {
+        query = { serviceType: req.query.serviceType };
+      }
+      const result = await serviceCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.post("/services", async (req, res) => {
       const newServices = req.body;
       console.log(newServices);
