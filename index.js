@@ -166,6 +166,16 @@ async function run() {
       res.send(result);
       // product details
     });
+    app.get("/service_by_type/:serviceType", async (req, res) => {
+      const serviceType = req.params.serviceType;
+      console.log(serviceType);
+      const query = { serviceType: serviceType };
+      // console.log("query" + query);
+      const result = await serviceCollection.find(query).toArray();
+      console.log(result);
+      res.send(result);
+    });
+
     app.get("/manage-services", async (req, res) => {
       console.log(req.query.email);
       // if (req.email.email !== req.query.email) {
