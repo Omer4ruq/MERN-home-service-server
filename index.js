@@ -114,8 +114,11 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/test", async (req, res) => {
-      const result = await bookedCollection.find().toArray();
+    app.get("/populer_booked", async (req, res) => {
+      const cursor = bookedCollection.find();
+      console.log(cursor);
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     app.delete("/booked/:id", async (req, res) => {
@@ -163,7 +166,7 @@ async function run() {
       res.send(result);
       // product details
     });
-    app.get("/manage-Services", async (req, res) => {
+    app.get("/manage-services", async (req, res) => {
       console.log(req.query.email);
       // if (req.email.email !== req.query.email) {
       //   return res.status(403).send({ message: "forbidden access" });
